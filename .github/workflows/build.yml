@@ -21,10 +21,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+
+      - name: 顯示環境資訊
+        run: |
+          dir
+          node -v
+          npm -v
 
       - name: 安裝依賴
-        run: npm install
+        run: |
+          npm install --no-package-lock
+          dir node_modules
 
       - name: 生成圖示
         run: npm run generate-icons
@@ -33,6 +40,9 @@ jobs:
         run: npm run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 顯示編譯結果
+        run: dir dist
 
       - name: 上傳編譯結果
         uses: actions/upload-artifact@v4
@@ -51,6 +61,9 @@ jobs:
         with:
           name: windows-exe
           path: dist
+
+      - name: 顯示發布檔案
+        run: dir dist
 
       - name: 創建發布
         uses: softprops/action-gh-release@v1
