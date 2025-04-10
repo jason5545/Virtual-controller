@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <!-- 背景 -->
+  <rect width="32" height="32" rx="4" fill="#333333" />
+  
+  <!-- 控制器主體 -->
+  <rect x="6" y="10" width="20" height="14" rx="3" fill="#4c9ed9" />
+  
+  <!-- 左側搖桿 -->
+  <circle cx="9" cy="18" r="3" fill="#333333" />
+  <circle cx="9" cy="18" r="1.5" fill="#d9d9d9" />
+  
+  <!-- 右側搖桿 -->
+  <circle cx="23" cy="18" r="3" fill="#333333" />
+  <circle cx="23" cy="18" r="1.5" fill="#d9d9d9" />
+  
+  <!-- 按鈕 (簡化) -->
+  <circle cx="23" cy="14" r="1.5" fill="#32cd32" />
+  <circle cx="20" cy="14" r="1.5" fill="#ff0000" />
+  
+  <!-- D-pad (簡化) -->
+  <rect x="7" cy="14" width="4" height="1" fill="#d9d9d9" />
+  <rect x="8.5" cy="12.5" width="1" height="3" fill="#d9d9d9" />
+</svg> 

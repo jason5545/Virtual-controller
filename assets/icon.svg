@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- 背景 -->
+  <rect width="256" height="256" rx="32" fill="#333333" />
+  
+  <!-- 控制器主體 -->
+  <rect x="48" y="60" width="160" height="130" rx="20" fill="#4c9ed9" />
+  
+  <!-- 左側搖桿區域 -->
+  <circle cx="70" cy="140" r="40" fill="#333333" />
+  
+  <!-- 右側搖桿區域 -->
+  <circle cx="186" cy="140" r="40" fill="#333333" />
+  
+  <!-- 搖桿桿子 -->
+  <circle cx="70" cy="140" r="15" fill="#d9d9d9" />
+  <circle cx="186" cy="140" r="15" fill="#d9d9d9" />
+  
+  <!-- 按鈕 -->
+  <!-- A按鈕 (綠色) -->
+  <circle cx="186" cy="90" r="15" fill="#32cd32" />
+  <text x="186" y="95" font-family="Arial" font-size="14" fill="white" text-anchor="middle">A</text>
+  
+  <!-- B按鈕 (紅色) -->
+  <circle cx="220" cy="90" r="15" fill="#ff0000" />
+  <text x="220" y="95" font-family="Arial" font-size="14" fill="white" text-anchor="middle">B</text>
+  
+  <!-- X按鈕 (藍色) -->
+  <circle cx="150" cy="90" r="15" fill="#1e90ff" />
+  <text x="150" y="95" font-family="Arial" font-size="14" fill="white" text-anchor="middle">X</text>
+  
+  <!-- Y按鈕 (黃色) -->
+  <circle cx="180" cy="50" r="15" fill="#ffff00" />
+  <text x="180" y="55" font-family="Arial" font-size="14" fill="black" text-anchor="middle">Y</text>
+  
+  <!-- D-pad -->
+  <rect x="50" y="85" width="40" height="10" fill="#d9d9d9" />
+  <rect x="65" y="70" width="10" height="40" fill="#d9d9d9" />
+</svg> 

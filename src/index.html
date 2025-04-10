@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>虛擬觸控控制器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    
+    body {
+      font-family: '微軟正黑體', Arial, sans-serif;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      overflow: hidden;
+      height: 100vh;
+    }
+    
+    #app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header {
+      padding: 10px;
+      background-color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      -webkit-app-region: drag;
+    }
+    
+    header button {
+      -webkit-app-region: no-drag;
+      background: #555;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    #controller-area {
+      flex: 1;
+      display: flex;
+      position: relative;
+    }
+    
+    .control-stick {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background-color: rgba(50, 50, 50, 0.7);
+      border: 2px solid #666;
+    }
+    
+    .left-stick {
+      left: 100px;
+      bottom: 100px;
+    }
+    
+    .right-stick {
+      right: 100px;
+      bottom: 100px;
+    }
+    
+    .stick-knob {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: rgba(100, 100, 100, 0.8);
+      border: 2px solid #999;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.05s ease-out;
+    }
+    
+    .action-buttons {
+      position: absolute;
+      right: 50px;
+      top: 100px;
+      display: grid;
+      grid-template-columns: 60px 60px;
+      grid-template-rows: 60px 60px;
+      grid-gap: 10px;
+    }
+    
+    .action-button {
+      border-radius: 50%;
+      background-color: rgba(50, 50, 50, 0.7);
+      border: 2px solid #666;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    
+    #button-a { background-color: rgba(50, 205, 50, 0.7); }
+    #button-b { background-color: rgba(255, 0, 0, 0.7); }
+    #button-x { background-color: rgba(30, 144, 255, 0.7); }
+    #button-y { background-color: rgba(255, 255, 0, 0.7); }
+    
+    .shoulder-buttons {
+      position: absolute;
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      padding: 20px 50px;
+    }
+    
+    .shoulder-button {
+      width: 100px;
+      height: 40px;
+      background-color: rgba(50, 50, 50, 0.7);
+      border: 2px solid #666;
+      border-radius: 10px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .dpad {
+      position: absolute;
+      left: 50px;
+      top: 100px;
+      display: grid;
+      grid-template-columns: 50px 50px 50px;
+      grid-template-rows: 50px 50px 50px;
+    }
+    
+    .dpad-button {
+      background-color: rgba(50, 50, 50, 0.7);
+      border: 2px solid #666;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #dpad-up { 
+      grid-column: 2;
+      grid-row: 1;
+      border-radius: 5px 5px 0 0;
+    }
+    
+    #dpad-left {
+      grid-column: 1;
+      grid-row: 2;
+      border-radius: 5px 0 0 5px;
+    }
+    
+    #dpad-center {
+      grid-column: 2;
+      grid-row: 2;
+      background-color: rgba(70, 70, 70, 0.7);
+    }
+    
+    #dpad-right {
+      grid-column: 3;
+      grid-row: 2;
+      border-radius: 0 5px 5px 0;
+    }
+    
+    #dpad-down {
+      grid-column: 2;
+      grid-row: 3;
+      border-radius: 0 0 5px 5px;
+    }
+    
+    .center-buttons {
+      position: absolute;
+      left: 50%;
+      top: 30%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+    }
+    
+    .center-button {
+      width: 60px;
+      height: 30px;
+      background-color: rgba(50, 50, 50, 0.7);
+      border: 2px solid #666;
+      border-radius: 15px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    
+    .settings-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(40, 40, 40, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      min-width: 300px;
+      display: none;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .settings-panel h2 {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .settings-item {
+      margin-bottom: 10px;
+    }
+    
+    .settings-item label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    .settings-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 15px;
+      gap: 10px;
+    }
+    
+    button {
+      background: #555;
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background: #666;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+    }
+    
+    input[type="checkbox"] {
+      margin-right: 5px;
+    }
+    
+    select {
+      width: 100%;
+      padding: 5px;
+      background: #444;
+      color: white;
+      border: 1px solid #666;
+      border-radius: 3px;
+    }
+    
+    /* 按鈕反饋效果 */
+    .feedback {
+      animation: button-feedback 0.1s ease-in-out;
+    }
+    
+    @keyframes button-feedback {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    
+    /* 鍵盤映射樣式 */
+    .key-mapping-table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+    
+    .key-mapping-table th, .key-mapping-table td {
+      padding: 5px;
+      text-align: left;
+      border-bottom: 1px solid #555;
+    }
+    
+    .key-mapping-input {
+      width: 60px;
+      background: #444;
+      color: white;
+      border: 1px solid #666;
+      border-radius: 3px;
+      padding: 3px;
+      text-align: center;
+      cursor: pointer;
+    }
+    
+    .key-recording-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      z-index: 1000;
+    }
+    
+    /* 標籤樣式 */
+    .settings-tabs {
+      display: flex;
+      border-bottom: 1px solid #555;
+      margin-bottom: 15px;
+    }
+    
+    .settings-tab {
+      padding: 8px 15px;
+      cursor: pointer;
+      background-color: transparent;
+      border: none;
+      color: #999;
+      outline: none;
+    }
+    
+    .settings-tab.active {
+      color: white;
+      border-bottom: 2px solid #4c9ed9;
+    }
+    
+    .settings-tab-content {
+      display: none;
+    }
+    
+    .settings-tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header id="title-bar">
+      <div class="title">虛擬觸控控制器</div>
+      <div class="controls">
+        <button id="settings-button">設定</button>
+        <button id="overlay-button">切換覆蓋模式</button>
+      </div>
+    </header>
+    
+    <div id="controller-area">
+      <!-- 左搖桿 -->
+      <div class="control-stick left-stick" id="left-stick">
+        <div class="stick-knob" id="left-knob"></div>
+      </div>
+      
+      <!-- 右搖桿 -->
+      <div class="control-stick right-stick" id="right-stick">
+        <div class="stick-knob" id="right-knob"></div>
+      </div>
+      
+      <!-- 按鈕區 -->
+      <div class="action-buttons">
+        <div class="action-button" id="button-y">Y</div>
+        <div class="action-button" id="button-x">X</div>
+        <div class="action-button" id="button-b">B</div>
+        <div class="action-button" id="button-a">A</div>
+      </div>
+      
+      <!-- 方向鍵 -->
+      <div class="dpad">
+        <div class="dpad-button" id="dpad-up">↑</div>
+        <div class="dpad-button" id="dpad-left">←</div>
+        <div class="dpad-button" id="dpad-center"></div>
+        <div class="dpad-button" id="dpad-right">→</div>
+        <div class="dpad-button" id="dpad-down">↓</div>
+      </div>
+      
+      <!-- 肩膀按鈕 -->
+      <div class="shoulder-buttons">
+        <div class="shoulder-button" id="button-lb">LB</div>
+        <div class="shoulder-button" id="button-rb">RB</div>
+      </div>
+      
+      <!-- 扳機按鈕 -->
+      <div class="shoulder-buttons" style="top: 60px;">
+        <div class="shoulder-button" id="button-lt">LT</div>
+        <div class="shoulder-button" id="button-rt">RT</div>
+      </div>
+      
+      <!-- 中央按鈕 -->
+      <div class="center-buttons">
+        <div class="center-button" id="button-back">BACK</div>
+        <div class="center-button" id="button-start">START</div>
+      </div>
+    </div>
+    
+    <!-- 設定面板 -->
+    <div class="settings-panel" id="settings-panel">
+      <h2>控制器設定</h2>
+      
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="general">一般設定</button>
+        <button class="settings-tab" data-tab="keyboard">鍵盤映射</button>
+        <button class="settings-tab" data-tab="advanced">進階設定</button>
+      </div>
+      
+      <div id="general-tab" class="settings-tab-content active">
+        <div class="settings-item">
+          <label for="opacity-slider">不透明度</label>
+          <input type="range" id="opacity-slider" min="0.1" max="1.0" step="0.1" value="0.8">
+        </div>
+        
+        <div class="settings-item">
+          <label>
+            <input type="checkbox" id="always-on-top" checked>
+            視窗保持在最上層
+          </label>
+        </div>
+        
+        <div class="settings-item">
+          <label for="controller-size">控制器大小</label>
+          <select id="controller-size">
+            <option value="small">小</option>
+            <option value="medium" selected>中</option>
+            <option value="large">大</option>
+          </select>
+        </div>
+      </div>
+      
+      <div id="keyboard-tab" class="settings-tab-content">
+        <div class="settings-item">
+          <label>
+            <input type="checkbox" id="keyboard-mapping-enabled">
+            啟用鍵盤映射
+          </label>
+        </div>
+        
+        <div id="keyboard-mapping-container" style="display: none;">
+          <div class="settings-item">
+            <h3>設定按鍵映射</h3>
+            <p>點擊輸入框，然後按下想要映射的鍵盤按鍵</p>
+            
+            <table class="key-mapping-table">
+              <tr>
+                <th>按鈕</th>
+                <th>按鍵映射</th>
+              </tr>
+              <tr>
+                <td>A 按鈕</td>
+                <td><input type="text" id="key-map-a" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>B 按鈕</td>
+                <td><input type="text" id="key-map-b" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>X 按鈕</td>
+                <td><input type="text" id="key-map-x" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>Y 按鈕</td>
+                <td><input type="text" id="key-map-y" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>上方向鍵</td>
+                <td><input type="text" id="key-map-up" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>下方向鍵</td>
+                <td><input type="text" id="key-map-down" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>左方向鍵</td>
+                <td><input type="text" id="key-map-left" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>右方向鍵</td>
+                <td><input type="text" id="key-map-right" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>LB 按鈕</td>
+                <td><input type="text" id="key-map-lb" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>RB 按鈕</td>
+                <td><input type="text" id="key-map-rb" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>LT 按鈕</td>
+                <td><input type="text" id="key-map-lt" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>RT 按鈕</td>
+                <td><input type="text" id="key-map-rt" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>開始按鈕</td>
+                <td><input type="text" id="key-map-start" class="key-mapping-input" readonly></td>
+              </tr>
+              <tr>
+                <td>返回按鈕</td>
+                <td><input type="text" id="key-map-back" class="key-mapping-input" readonly></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <div id="advanced-tab" class="settings-tab-content">
+        <div class="settings-item">
+          <label>
+            <input type="checkbox" id="lock-position">
+            鎖定控制器位置
+          </label>
+        </div>
+        
+        <div class="settings-item">
+          <label>
+            <input type="checkbox" id="vibration-enabled" checked>
+            啟用觸覺反饋 (如果裝置支援)
+          </label>
+        </div>
+        
+        <div class="settings-item">
+          <h3>快捷鍵</h3>
+          <table class="key-mapping-table">
+            <tr>
+              <td>切換顯示/隱藏</td>
+              <td><strong>Alt+Shift+C</strong></td>
+            </tr>
+            <tr>
+              <td>切換覆蓋模式</td>
+              <td><strong>Alt+Shift+O</strong></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      
+      <div class="settings-actions">
+        <button id="cancel-settings">取消</button>
+        <button id="save-settings">儲存</button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // 標籤切換功能
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabs = document.querySelectorAll('.settings-tab');
+      const tabContents = document.querySelectorAll('.settings-tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          // 移除所有標籤的活動狀態
+          tabs.forEach(t => t.classList.remove('active'));
+          tabContents.forEach(c => c.classList.remove('active'));
+          
+          // 添加當前標籤的活動狀態
+          tab.classList.add('active');
+          const tabId = tab.dataset.tab;
+          document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+      });
+    });
+  </script>
+  
+  <script src="renderer.js"></script>
+</body>
+</html> 

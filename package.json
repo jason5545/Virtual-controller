@@ -1,0 +1,57 @@
+{
+  "name": "virtual-touch-controller",
+  "version": "0.2.0",
+  "description": "基於ViGEmBus的Windows觸控螢幕虛擬XInput控制器",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --debug",
+    "build": "electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "generate-icons": "node assets/generate-icons.js"
+  },
+  "keywords": [
+    "vigembus",
+    "xinput",
+    "controller",
+    "touch",
+    "overlay"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.0",
+    "canvas": "^2.11.2"
+  },
+  "dependencies": {
+    "node-vigem-client": "^1.0.1",
+    "electron-store": "^8.1.0"
+  },
+  "build": {
+    "appId": "com.virtual-touch-controller",
+    "productName": "Virtual Touch Controller",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "fileAssociations": [],
+    "asarUnpack": [
+      "assets/**/*"
+    ]
+  }
+} 
