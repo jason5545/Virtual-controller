@@ -21,6 +21,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@nefarius'
 
       - name: 顯示環境資訊
         run: |
@@ -30,7 +32,11 @@ jobs:
 
       - name: 安裝依賴
         run: |
-          npm install --no-package-lock
+          # 安裝所有依賴
+          npm install --no-package-lock --verbose
+
+          # 顯示模組目錄
+          if (-not (Test-Path node_modules)) { mkdir node_modules }
           dir node_modules
 
       - name: 生成圖示
@@ -72,4 +78,4 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

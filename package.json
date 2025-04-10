@@ -25,7 +25,7 @@
     "canvas": "^2.11.2"
   },
   "dependencies": {
-    "node-vigem-client": "^1.0.1",
+    "vigemclient": "^1.5.2",
     "electron-store": "^8.1.0"
   },
   "build": {
@@ -54,4 +54,4 @@
       "assets/**/*"
     ]
   }
-} 
+}
